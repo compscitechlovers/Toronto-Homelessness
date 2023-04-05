@@ -1,0 +1,176 @@
+---
+title: "Addressing Youth Homelessness in Toronto"
+author: "Sagith Kalaichelvam"
+thanks: "Code and data supporting this analysis is available at: https://github.com/compscitechlovers/Toronto-Homelessness"
+date: "`r Sys.time()`"
+date-format: "D MMMM YYYY"
+format: 
+  pdf:
+    documentclass: article
+    geometry: margin = 1in
+    abstract: "For the past several decades, there are homelessness crisis in Toronto, Ontario, Canada. The city have tried some measures to provide temporary shelters and suppose services for people that requires these resources. The homelessness shelter system provides emergency and shelter housing to homeless individuals and families. There are many youths that are currently homeless, and requires resources to support them. Youth homelessness will be mainly mentioned a lot through out this paper. Images will be shown of a potential mobile app for homelessness population seeking shelters and resources. The city is still working hard to find sustainable solutions to address homelessness."
+    toc: true
+    number-sections: true
+    colorlinks: true
+    lot: false
+    lof: false
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| echo: false
+#| warning: false
+
+options(repos = list(CRAN="http://cran.rstudio.com/"))
+
+# read packages
+library(tidyverse)
+library(opendatatoronto)
+library(dplyr)
+library(janitor)
+library(knitr)
+library(kableExtra)
+library(here)
+```
+
+```{r}
+#| include: false
+#| echo: false
+#| warning: false
+
+#### Workspace set-up and read in data####
+# Load packages 
+library(opendatatoronto)
+library(dplyr)
+
+package <- show_package("ac77f532-f18b-427c-905c-4ae87ce69c93")
+package
+
+# Access the list
+resources <- list_package_resources("ac77f532-f18b-427c-905c-4ae87ce69c93")
+
+# Identify the file type
+datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
+
+# Load data
+data <- filter(datastore_resources, row_number()==1) %>% get_resource()
+data
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+# Reading the data files
+cleaned_shelter_system_data <- read.csv(here::here("inputs/data/cleaned_shelter_system_data.csv"))
+
+returned_from_housing_data <- read.csv(here::here("inputs/data/returned_from_housing_data.csv"))
+
+moved_to_housing_data <- read.csv(here::here("inputs/data/moved_to_housing_data.csv"))
+
+all_returned_from_housing_data <- read.csv(here::here("inputs/data/all_returned_from_housing_data.csv"))
+
+all_moved_to_housing_data <- read.csv(here::here("inputs/data/all_moved_to_housing_data.csv"))
+```
+
+\newpage
+
+
+# Introduction
+
+Toronto has the largest population within Canada, and it tends to the most expensive city to live in. There are some people currently facing homelessness. Homelessness is when you do not have any financial assistance, or permanent housing, where they need resources to secure a home. One of the main reason why people are facing homelessness because of lack of affordable housing, financial, and social issues [@citeShoemaker]. The lack of living arrangments is what  experiencing by homelessness individuals can result in other health issues.
+
+Many individuals and families who used to be homeless are now living in permanent housing, where they are provided stable housing and tools. During the COVID-19 pandemic, there was lots of issues that have affected the economy, which have created the affordable housing crisis and this leads for individuals to face difficulties to access permanent housing. The crisis was slow, which impacted the necessary innovation and resources for people facing homesslness in Toronto [@citeZwaren]. The COVID-19 pandemic increases the number of temporary shelters throughout Toronto, which does include hotels, this can assist people without stable housing. While this may have some relief for homeless individuals in the short-term, but it is not a long-term solution for homelessness people.
+
+In this paper, there is going to be an investigation of the trends of Toronto's homeless youths by comparing those who have returned to shelters from permanent housing and those who have moved to permanent housing between the years 2018 and 2022. Section 2 shows the dataset from Open Data Toronto. Section 3 shows a braod information about what is going on in the results. Section 4 shows the model for this data. Section 5 shows some discussion, and weakness and next steps. Section 6 shows some final thoughts in conclusion. There is an appendix which will have images of a potential mobile application for homelessness youths to seek a shelter and access to some useful resources.
+
+# Data
+
+## Data Source
+
+This report uses the Toronto Shelter System Flow data set [@citedataset] obtained from the City of Toronto's Open Data Toronto Portal [@citedataportal]. This data set is accessed and processed through the use of R [@citeR], and the R packages "tidyverse" [@citetidyverse], "dplyr" [@citedplyr], "janitor" [@citejanitor], "here" [@citehere], "kableExtra" [@citekableextra], and "knitr" [@citeknitr]. 
+
+The Shelter, Support & Housing Administration publishes data on homelessness in Toronto. This data has been available since January 2018 and is updated on a monthly basis. The latest update occurred on March 16, 2023, as of April 1, 2023. The data is collected through the Shelter Management Information System (SMIS), which tracks individuals accessing overnight services funded by the City of Toronto, such as emergency shelters, hotel programs, and warming centers [@citedataset].
+
+## Data Variables
+
+This dataset has about 444 observations across 18 variables such as Date, Population Groups, and different groups for age ranges. All Populations, Chronic, Families, Youth, Single Adult, Refugees, Non-Refugees, Indigenous are all the different categories of the 8 population groups.
+
+More to be added soon.
+
+## Data Visualization
+
+This data shows lots of information which presents the data of going from shelter to permanent housing or vice versa during 2018 to 2022. The data information from 2020 to 2022 gives me more useful trends to analyze because of the strong impact from the COVID-19 pandemic. Before viewing the trends of homelessness youths and their access to shelters and housing, I will observe all of the population groups within Toronto. I will use these data to analyze the difference between youths and other population groups under homeless category. 
+
+More to be added soon.
+
+
+The figures and tables are to be added later.
+
+\newpage
+
+
+# Results
+To be added soon.
+
+\newpage
+
+
+# Model
+To be added soon.
+
+\newpage
+
+
+# Discussion
+
+## Youth Homelessness Origin
+Youths often make mistakes in their lives which can also make some youths commit crimes without realizing it. Due to the pressure given by the society to their family, these youths have to leave their homes to prevent any dangerous crime to their society, which causes them to face homelessness. Families of unstable financial resources are unable to take care of their kids financially. So, these youths end up thinking of their parents' situation, and end up leaving the house, and walking alone in the streets. Due to the identity of these youths, they also face troubles finding employment, or a place to live, so all of these issues cause some youths to experience homelessness.
+
+
+## Homelessness to finding a Shelter
+
+To be added soon.
+
+## Searching Housing from Shelter
+
+To be added soon.
+
+## Going from Housing to Shelter again
+
+To be added soon.
+
+## Weaknesses and Next Steps
+
+To be added soon.
+
+\newpage
+
+
+# Conclusion
+
+Youth homelessness is an important issue because it not only impacts the immediate well-being of these individuals but also has long-term consequences for their futures. Moreover, their unique challenges and vulnerabilities call for tailored support and resources to break the cycle of homelessness. We want to make sure that all youths facing homelessness do not face any additional struggles of finding a shelter to stabilise their housing, improve their wellbeing, connect with others within the community, and potentially avoid the chances of going into homelessness again. 
+
+As a team along with other UX Designers, we have created a homelessness app called HomeSafe, which is designed for youths, which can be soon available to the public. Our solution is developed by two primary objectives. The first objective is to address the immediate needs of homeless youths by offering emergency call functionality and shelter-finding capabilities. Emergency assistance provides homeless youths with the ability to call for help in emergencies, ensuring that vulnerable youths can get the help they need as soon as possible, potentially saving lives. Shelter location enables homeless youths to find shelters that are available near them, providing them with a safe place to stay and access to basic necessities, such as food and water. The second objective focuses on helping them overcome their current situation through the resource hub, which provides access to valuable tools and assistance. With these features, HomeSafe aims to make a significant impact on the lives of homeless youths in Canada, equipping them with the necessary support and resources to pave the way for brighter futures.
+
+Our next step within our UX Design and Front-Development team is to expand our focus to provide support for both parents and children in fostering healthier relationships and communication as we understand that addressing the root cause requires helping parents tackle abusive behavior. By offering resources and guidance aimed at resolving conflicts, enhancing emotional understanding, and promoting positive parenting practices, we can create an environment where families can thrive. This will not only help prevent youth homelessness but also contribute to the overall well-being of the entire community
+
+\newpage
+
+
+# Appendix {.unnumbered}
+A mobile application called HomeSafe was built using Figma to allow homelessness people to easily seek a shelter or access resources.
+
+Link to Figma Prototypes will be added soon with an approval from team members.
+
+![SOS Feature](HomeSafe1.png)
+![Finding a Shelter](HomeSafe2.png)
+![List of options in Resource Hub](HomeSafe3.png)
+![Have options to select](HomeSafe4.png)
+![Access Education Resources and able to chat with counselor](HomeSafe5.png)
+
+
+\newpage
+
+# References
