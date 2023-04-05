@@ -40,7 +40,7 @@ library(here)
 #| warning: false
 
 #### Workspace set-up and read in data####
-# Load packages 
+# Loading packages 
 library(opendatatoronto)
 library(dplyr)
 
