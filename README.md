@@ -9,8 +9,8 @@ There are many people facing homelessness within Toronto, and Youth are one of t
 
 The repo is structured as the following:
 
--   `inputs/data` contains the raw data as csv files.
+-   `inputs/data` contains all of the raw data such as csv files.
 
--   `outputs/paper` contains all of the important files such as the PDF of my paper, Quarto document written in R, and references files.
+-   `outputs` contains all of the important files such as the PDF of my paper, Quarto document written in R, and references files.
 
 -   `scripts` contains all the R scripts such as downloading the data from OpenDataToronto, Simulation, Testing, any other necessary files.
