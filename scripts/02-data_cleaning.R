@@ -104,25 +104,25 @@ all_moved_to_housing_data <-
 # This will save the cleaned data
 write_csv(
   x = cleaned_shelter_system_data,
-  file = "cleaned_shelter_system_data.csv"
+  file = "inputs/data/cleaned_shelter_system_data.csv"
 )
 
 write_csv(
   x = returned_from_housing_data,
-  file = "returned_from_housing_data.csv"
+  file = "inputs/data/returned_from_housing_data.csv"
 )
 
 write_csv(
   x = all_returned_from_housing_data,
-  file = "all_returned_from_housing_data.csv"
+  file = "inputs/data/all_returned_from_housing_data.csv"
 )
 
 write_csv(
   x = moved_to_housing_data,
-  file = "moved_to_housing_data.csv"
+  file = "inputs/data/moved_to_housing_data.csv"
 )
 
 write_csv(
   x = all_moved_to_housing_data,
-  file = "all_moved_to_housing_data.csv"
+  file = "inputs/data/all_moved_to_housing_data.csv"
 )
