@@ -1,5 +1,5 @@
 ---
-title: "Addressing Youth Homelessness in Toronto"
+title: "An analysis of different Homelessness population in the city of Toronto"
 author: "Sagith Kalaichelvam"
 thanks: "Code and data supporting this analysis is available at: https://github.com/compscitechlovers/Toronto-Homelessness"
 date: "`r Sys.time()`"
@@ -8,7 +8,7 @@ format:
   pdf:
     documentclass: article
     geometry: margin = 1in
-    abstract: "For the past several decades, there are homelessness crisis in Toronto, Ontario, Canada. The city have tried some measures to provide temporary shelters and suppose services for people that requires these resources. The homelessness shelter system provides emergency and shelter housing to homeless individuals and families. There are many youths that are currently homeless, and requires resources to support them. Youth homelessness will be mainly mentioned a lot through out this paper. Images will be shown of a potential mobile app for homelessness population seeking shelters and resources. The city is still working hard to find sustainable solutions to address homelessness."
+    abstract: "This paper aims to investigate the data of homelessness population in Toronto, with a focus in youth and single adult population groups. The models are showing useful information about the homelessness population across the last 5 years. These results are compared across different homelessness population groups across the city of Toronto in Canada. By utilizing data between those who moved to housing and returned from housing, we found that there is a weak positive correlation with all population variables."
     toc: true
     number-sections: true
     colorlinks: true
@@ -29,6 +29,7 @@ library(tidyverse)
 library(opendatatoronto)
 library(dplyr)
 library(janitor)
+library(ggplot2)
 library(knitr)
 library(kableExtra)
 library(here)
@@ -39,21 +40,21 @@ library(here)
 #| echo: false
 #| warning: false
 
-#### Workspace set-up and read in data####
-# Load packages 
+#### Set up Workplace ####
+# Loading packages 
 library(opendatatoronto)
 library(dplyr)
 
 package <- show_package("ac77f532-f18b-427c-905c-4ae87ce69c93")
 package
 
-# Access the list
+# Retrieving the data list
 resources <- list_package_resources("ac77f532-f18b-427c-905c-4ae87ce69c93")
 
-# Identify the file type
+# Identifying the file format
 datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
 
-# Load data
+# Loading Data
 data <- filter(datastore_resources, row_number()==1) %>% get_resource()
 data
 ```
@@ -79,82 +80,291 @@ all_moved_to_housing_data <- read.csv(here::here("inputs/data/all_moved_to_housi
 
 # Introduction
 
-Toronto has the largest population within Canada, and it tends to the most expensive city to live in. There are some people currently facing homelessness. Homelessness is when you do not have any financial assistance, or permanent housing, where they need resources to secure a home. One of the main reason why people are facing homelessness because of lack of affordable housing, financial, and social issues [@citeShoemaker]. The lack of living arrangments is what  experiencing by homelessness individuals can result in other health issues.
+Toronto has the largest population within Canada, and it tends to the most expensive city to live in [@numsites]. There are some people currently facing homelessness. Homelessness is when you do not have any financial assistance, or permanent housing, where they need resources to secure a home. One of the main reason why people are facing homelessness because of lack of affordable housing, financial, and social issues [@citeShoemaker]. The lack of living arrangments is what experiencing by homelessness individuals can result in other health issues.
 
-Many individuals and families who used to be homeless are now living in permanent housing, where they are provided stable housing and tools. During the COVID-19 pandemic, there was lots of issues that have affected the economy, which have created the affordable housing crisis and this leads for individuals to face difficulties to access permanent housing. The crisis was slow, which impacted the necessary innovation and resources for people facing homesslness in Toronto [@citeZwaren]. The COVID-19 pandemic increases the number of temporary shelters throughout Toronto, which does include hotels, this can assist people without stable housing. While this may have some relief for homeless individuals in the short-term, but it is not a long-term solution for homelessness people.
+In Canada, there are 1 in 5 shelter users that are youths [@youthhomelessness]. More than a third of these users are from Ontario. 20% of the Canadian homelessness population are youths between the age of 13 and 24 [@youthhomelessness]. 40% of the youths have faced homelessness before the age of 16 [@youthhomelessness]. Across Canada, there are about 40,000 youths that are homeless, while about 6,000 to 7,000 of these youths are seeking a safe place to be sheltered. In Toronto, there are about 2,000 youths that are homeless, which are 11% of the homelessness population in Toronto [@youthhomelessness]. Out of 100 youths, we can expect that one of them are currently homeless. 24% of the youths living in Toronto shelters are identified as part of the LGBTQ community. The top 5 reasons of why youths are facing homelessness are conflicts with their parents or guardians, not enough income for housing, experiencing abuse by parents or guardians, conflict with others, and unsafe living conditions. 
 
-In this paper, there is going to be an investigation of the trends of Toronto's homeless youths by comparing those who have returned to shelters from permanent housing and those who have moved to permanent housing between the years 2018 and 2022. Section 2 shows the dataset from Open Data Toronto. Section 3 shows a braod information about what is going on in the results. Section 4 shows the model for this data. Section 5 shows some discussion, and weakness and next steps. Section 6 shows some final thoughts in conclusion. There is an appendix which will have images of a potential mobile application for homelessness youths to seek a shelter and access to some useful resources.
+Many individuals and families who used to be homeless are now living in permanent housing, where they are provided stable housing and tools. During the COVID-19 pandemic, there was lots of issues that have affected the economy, which have created the affordable housing crisis and this leads for individuals to face difficulties to access permanent housing. The crisis was slow, which impacted the necessary innovation and resources for people facing homesslness in Toronto [@citeZwaren]. The COVID-19 pandemic increases the number of temporary shelters throughout Toronto, which does include hotels, this can assist people without stable housing. While this may have some relief for homeless individuals in the short-term, but it is not a long-term solution for homelessness people. The estimand of the analysis is the relationship between moving to housing, and returning from housing which can be found in [@fig-2], which is a linear regression model.
+
+In this paper, there is going to be an investigation of the trends of Toronto's homeless youths by comparing those who have returned to shelters from permanent housing and those who have moved to permanent housing between the years 2018 and 2022. Section 2 shows the dataset from Open Data Toronto. Section 3 shows a model for this data. Section 4 shows a broad information about the results shown among all the figures and tables. Section 5 shows some discussion, and weakness and next steps. Section 6 shows some final thoughts in conclusion, with a detailed description of a potential mobile application for homelessness youths to seek a shelter and access to some useful resources. There is an appendix which will have images of a potential mobile application.
+
+## Research Questions
+1. Why is the youth and single adult population groups the most important of the given data?
+
+2. Is there a strong correlation between the number of people returning from housing, and moving to housing?
+
+3. How is the trend affected in the year 2020 based on the data?
+
+4. How might we effectively addresses youth homelessness in Canada by offering support and resources to help them build brighter futures?
 
 # Data
 
-## Data Source
+## Measurement
 
-This report uses the Toronto Shelter System Flow data set [@citedataset] obtained from the City of Toronto's Open Data Toronto Portal [@citedataportal]. This data set is accessed and processed through the use of R [@citeR], and the R packages "tidyverse" [@citetidyverse], "dplyr" [@citedplyr], "janitor" [@citejanitor], "here" [@citehere], "kableExtra" [@citekableextra], and "knitr" [@citeknitr]. 
+The data used in this paper comes from the Toronto Shelter System Flow data set [@citedataset] obtained from the City of Toronto's Open Data Toronto Portal [@citedataportal]. This dataset provides a huge data such as different populations groups, types of homelessness categories, etc.
+
+This report uses the Toronto Shelter System Flow data set [@citedataset] obtained from the City of Toronto's Open Data Toronto Portal [@citedataportal]. This data set is accessed and processed through the use of R [@citeR], and the R packages "tidyverse" [@citetidyverse], "dplyr" [@citedplyr], "janitor" [@citejanitor], "ggplot2" [@ggplot],"here" [@citehere], "kableExtra" [@citekableextra], and "knitr" [@citeknitr]. 
 
 The Shelter, Support & Housing Administration publishes data on homelessness in Toronto. This data has been available since January 2018 and is updated on a monthly basis. The latest update occurred on March 16, 2023, as of April 1, 2023. The data is collected through the Shelter Management Information System (SMIS), which tracks individuals accessing overnight services funded by the City of Toronto, such as emergency shelters, hotel programs, and warming centers [@citedataset].
 
 ## Data Variables
 
-This dataset has about 444 observations across 18 variables such as Date, Population Groups, and different groups for age ranges. All Populations, Chronic, Families, Youth, Single Adult, Refugees, Non-Refugees, Indigenous are all the different categories of the 8 population groups.
+This dataset has about 444 observations across 18 variables such as Date, Population Groups, and different groups for age ranges. All Populations, Chronic, Families, Youth, Single Adult, Refugees, Non-Refugees, and Indigenous are all the different categories of the 8 population groups. The variables that I am most interested to use would be Youth and Single Adult in part of some of the figures and tables. I would be considering Youth and Single Adult population groups as the main focus of this paper, since I believe they are currently the ones that are struggling a lot. There are 4 important categories, which are returned from housing, newly identified, moved to housing, and actively homeless. Returned from housing is the people that were in shelters or homeless before, and they are leaving their recent housing. Newly identified are newcomers to shelters and living for their first time. Moved to housing are people who are originally in shelters, and they are moving to a permanent housing to live in. Actively homeless are people that do not have any living arragenments, and walking around the streets 24/7.
 
-More to be added soon.
+• All populations: Refers to total number of individuals represented in the report without any demographic breakdown [@citedataset].
+
+• Chronic (refers to chronic homelessness): People who meet one of the two following criteria, as per the federal definition of chronic homelessness. The person has recorded a minimum of 180 overnight stay in the past year (365 days); or the person has recurrent overnight stays over the past three years with a cumulative duration of at least 546 nights [@citedataset].
+
+• Families: Individuals who are recorded as staying in a family designated overnight service [@citedataset].
+
+• Youth: Refers to unaccompanied youth and includes people who are between 16 and 24 years old by the last date of the reporting month and are not members of a family as defined above [@citedataset].
+
+• Single Adult: Refers to individuals who are neither classified as youth nor are members of a family [@citedataset].
+
+• Refugees: People who either identify as refugees upon intake to a shelter system or whose intake is completed into a program designated for refugees. Applies to all household members as answered by the household head [@citedataset].
+
+• Non-Refugees: People who are not categorized as refugee per the definition above [@citedataset].
+
+• Indigenous: An individual is classified as Indigenous if the person has self-identified as First Nations (status, non-status, treaty, non-treaty), Metis or Inuit in at least one of the intake(s) completed in SMIS (Shelter Management Information System) [@citedataset].
 
 ## Data Visualization
 
-This data shows lots of information which presents the data of going from shelter to permanent housing or vice versa during 2018 to 2022. The data information from 2020 to 2022 gives me more useful trends to analyze because of the strong impact from the COVID-19 pandemic. Before viewing the trends of homelessness youths and their access to shelters and housing, I will observe all of the population groups within Toronto. I will use these data to analyze the difference between youths and other population groups under homeless category. 
-
-More to be added soon.
+All data shows lots of information which presents the data of going from shelter to permanent housing or vice versa, etc during 2018 to 2022. The data information from 2020 to 2022 gives me more useful trends to analyze because of the strong impact from the COVID-19 pandemic. Before viewing the trends of homelessness youths, single adults, and other populations and their access to shelters and housing, I will show all of the population groups within Toronto in a sample figure. I will use these data to analyze the difference between youths and other population groups under homeless category. 
 
 
-The figures and tables are to be added later.
-
-\newpage
-
-
-# Results
-To be added soon.
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Total number of people returning from housing in 2018 to 2022.."
+#| label: fig-1
+all_returned_from_housing_data |>
+  ggplot(mapping = aes(x = year, y = returned_from_housing, fill = group, label = returned_from_housing)) +
+  geom_bar(stat = "identity") + 
+  labs(
+    title = "Population Groups that Returned from Housing",
+    x = "Year",
+    y = "Number of Person(s)", 
+    fill = "Population Groups"
+  ) + 
+  scale_y_continuous(breaks=seq(0, 4000, 500)) +
+  theme_classic()
+```
 
 \newpage
 
 
 # Model
-To be added soon.
+Linear regression is a statistical method that can model the relationship of one or more independent variables and resulting variables. Linear regression can find the best fitting line that can minimize the sum of squared errors of predicted values, and actual values. The equation model is listed below.
+
+$$
+y = b_0 + b_1x + e
+$$
+
+ β0 and β1 are the coefficients of this model, while e is the error term. The y value represents the dependant variable, while x is the independent variable within this equation. 
+
+I decided to choose the simple linear regression model to know about the correlation between the homelessness people that are moving to housing after living in shelter, and those who previously lived in a shelter are moving from housing to shelter again. This research question was very important for me because I really wanted to know whether or not the data of both moving to housing and returning from housing have any relationship. I was expecting that if the number of people returning from housing increases, then the number of people moving to housing will decrease. I thought both of these will have a strong relationship because usually when there are more people returning from housing, then there might a shortage of housing in the city. So, I thought that maybe a shortage of housing market might have impacted the number of people returning from housing to increase, and number of people moving to housing will decrease. But, it turns out that the correlation between moved to housing, and returning from housing is around 0.3487579. In theory, when the correlation is closer to 0, then it is weak. When the correlation is closer to 1, then it is stronger. This proves that there is a weak correlation between moving to housing, and returning from housing because there is a minimal relationship/
+
+```{r}
+#| messages: false
+#| echo: false
+#| warning: false
+#| fig-cap: "The correlation between homeless people moving to housing and going back to shelter from 2018 to 2022"
+#| label: fig-2
+# Accessing the cleaned dataset
+model1 <- read.csv(here::here("inputs/data/cleaned_shelter_system_data.csv"))
+
+cor(model1$returned_from_housing, model1$moved_to_housing)
+
+# Plotting the model
+plot(model1$returned_from_housing, model1$moved_to_housing)
+
+shelterModel <- lm(returned_from_housing ~ moved_to_housing, data = model1, xlab = "Moved to Housing", ylab = "Returned from Housing")
+
+# Shows the summary of this model
+summary(shelterModel)
+```
+
+
 
 \newpage
 
 
+# Results
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Total number of people moving to housing from 2018 to 2022."
+#| label: fig-3
+all_moved_to_housing_data |>
+  ggplot(mapping = aes(x = year, y = moved_to_housing, fill = group, label = moved_to_housing)) +
+  geom_bar(stat = "identity") + 
+  labs(
+    title = "Population Groups that Moved to Housing",
+    x = "Year",
+    y = "Number of Person(s)", 
+    fill = "Population Groups"
+  ) + 
+  scale_y_continuous(breaks=seq(0, 30000, 5000)) +
+  theme_classic()
+```
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Total number of people entering shelters for first time from 2018 to 2022."
+#| label: fig-4
+cleaned_shelter_system_data |>
+  ggplot(mapping = aes(x = year, y = newly_identified, fill = group, label = newly_identified)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Population Groups that are Newcomers to Shelters",
+    x = "Year",
+    y = "Number of Person(s)",
+    fill = "Population Groups"
+  ) + 
+  scale_y_continuous(breaks=seq(0, 50000, 5000)) +
+  theme_classic()
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Total number of LGBTQ people in Shelters from 2018 to 2022."
+#| label: fig-5
+cleaned_shelter_system_data |>
+  ggplot(mapping = aes(x = year, y = gender_transgender_non_binary_or_two_spirit, fill = group, label = gender_transgender_non_binary_or_two_spirit)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Population Groups of LGBTQ people in Shelters",
+    x = "Year",
+    y = "Number of Person(s)", 
+    fill = "Population Groups"
+  ) + 
+  scale_y_continuous(breaks=seq(0, 7000, 1000)) +
+  theme_classic()
+```
+
+\newpage
+
+
+In [@fig-1] and [@fig-3] from 2018 to 2022, the number of these populations groups that are returning from housing has been increasing, while the number of moving to housing is decreasing in Toronto. This trend indicates that individuals and families are facing difficulties such as financial, physical, or social problems, which are preventing these homelessness population from accessing to good living conditions. The number of individuals that are moving to permanent housing has been decreasing over these past 5 years. It suggests that available housing resources are currently not sufficent enough to accomodate the growing demand for affordable and stable living arrangments in the city of Toronto. It may also imply that there are some barriers that are preventing individuals and families from accessing and maintaining permanent housing. When taking the combination of youth and single adult, there isn't really a big differences over years for both [@fig-1] and [@fig-3]. This could be because they are not seen in the importance of seeking a housing. Usually youths and single adults like to socialize with others within the community, where they can easily socialize in shelters.
+
+In [@fig-4], it shows the data of newly identified people moving into shelters for their first time. It shows that the number of newcomers have dropped from 2018, but that is strongly impacted by COVID-19 first wave in 2020. There is a recovery from 2021 because it is starting to rise again, where we can expect that in the future the number of newcomers can beat the records of 2018. Combination of youth and single adult data shows the same trend where is was decreasing from 2018 to 2020, but starting to rise again for the last 2 years.
+
+[@fig-5] shows the data of LGBTQ people that are currently living in shelters from 2018 to 2022. The number of these populations groups are increasing every year, which indicates that LGBTQ people are getting to know about the services that are offered by the city of Toronto. This clearly shows the LGBTQ community is getting access to everything that needed from the city, but the problem is that they are still struggling to find a permanent housing for them to live. Many people in the housing markets are still not interested to give their properties for rent to LGBTQ populations because of their personal reasons. When you take the combination of both youth and single adult, it shows that the trend is increasing in their categories for LGBTQ people living in shelters.
+
+\newpage
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: "The total of homelessness youths in Toronto from 2018 to 2022."
+#| label: tbl-1
+cleaned_shelter_system_data |>
+  select(
+    group,
+    year,
+    newly_identified,
+    actively_homeless,
+    returned_from_housing,
+    moved_to_housing) |>
+  filter(group == "Youth") |>
+  group_by("Year" = year) |>
+  summarise(
+    "Newly Identified" = sum(newly_identified),
+    "Actively Homeless" = sum(actively_homeless),
+    "Return from Housing" = sum(returned_from_housing),
+    "Moved to Housing" = sum(moved_to_housing)) |>
+  knitr::kable()
+```
+What can be discerned from [@tbl-1] is that the total amount of youth who are newly identified only increases slightly pre-pandemic and decreases slightly during the years of the pandemic. This pattern is the same for the youth that are actively homeless. For the total amount of youth that return from permanent housing, there is a fluctuating trend from 2020 to 2022. As for those that move to permanent housing there is a clear decreasing trend for youth. There are lots of homeless youths that are actively outside which are around 10000. This shows that not many youth are aware of shelter and resources. They definitely need something that can help them to know about shelters and available resources by the city of Toronto.
+
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: "The total of homelessness single adults in Toronto from 2018 to 2022."
+#| label: tbl-2
+cleaned_shelter_system_data |>
+  select(
+    group,
+    year,
+    newly_identified,
+    actively_homeless,
+    returned_from_housing,
+    moved_to_housing) |>
+  filter(group == "Single Adult") |>
+  group_by("Year" = year) |>
+  summarise(
+    "Newly Identified" = sum(newly_identified),
+    "Actively Homeless" = sum(actively_homeless),
+    "Return from Housing" = sum(returned_from_housing),
+    "Moved to Housing" = sum(moved_to_housing)) |>
+  knitr::kable()
+```
+In [@tbl-2], it shows that there is an increase for all categories between 2018 and 2019 for Single Adults. In 2020, that is when the COVID-19 pandemic have hit many things hard, so it have led a decrease for all categories such as newly identified, actively homeless, return from housing, and moved to housing. In 2021, everything is starting to recover, so all numbers started to rise again, and continuing the trend in 2022. By looking at the data for single adults that are newly identified, there are still lots of people that are coming into shelters for their first time. More importantly, there are still lots of people that are still actively homeless, where they still did not find a safe place to live. Even though there is a slight increase over time for those living in shelters moving into a housing to live in. But, there are still lots of people returning back to shelters again from housing. For single adults, it also has many actively 
+```{r}
+#| echo: false
+#| warning: false
+#| tbl-cap: "The total of homelessness youths based of genders in Toronto from 2018 to 2022."
+#| label: tbl-3
+cleaned_shelter_system_data |>
+  select(
+    group,
+    year,
+    gender_male,
+    gender_female,
+    gender_transgender_non_binary_or_two_spirit) |>
+  filter(group == "Youth") |>
+  group_by("Year" = year) |>
+  summarise(
+    "Males" = sum(gender_male),
+    "Females" = sum(gender_female),
+    "LGBTQ" = sum(gender_transgender_non_binary_or_two_spirit)) |>
+  knitr::kable()
+```
+[@tbl-3] shows that most of the youths that are in all homelessness categories are males. There are relatively less females than males of being homelessness or living in shelters, but the trend of females tends to increase, while the trend of males tends to decrease. There is a possibility that in the future, the number of females being homeless might surpasses the number of males being homeless. The number of LGBTQ people are relatively low in this dataset because there are less people that are identified as LGBTQ, so that is a possibility why it is very low compared to the genders.
+
+
+\newpage
+
 # Discussion
 
 ## Youth Homelessness Origin
-Youths often make mistakes in their lives which can also make some youths commit crimes without realizing it. Due to the pressure given by the society to their family, these youths have to leave their homes to prevent any dangerous crime to their society, which causes them to face homelessness. Families of unstable financial resources are unable to take care of their kids financially. So, these youths end up thinking of their parents' situation, and end up leaving the house, and walking alone in the streets. Due to the identity of these youths, they also face troubles finding employment, or a place to live, so all of these issues cause some youths to experience homelessness.
-
-
-## Homelessness to finding a Shelter
-
-To be added soon.
+Youths often make mistakes in their lives which can also make some youths commit crimes without realizing it [@lim]. Due to the pressure given by the society to their family, these youths have to leave their homes to prevent any dangerous crime to their society, which causes them to face homelessness. Families of unstable financial resources are unable to take care of their kids financially. So, these youths end up thinking of their parents' situation, and end up leaving the house, and walking alone in the streets. Due to the identity of these youths, they also face troubles finding employment, or a place to live, so all of these issues cause some youths to experience homelessness.
 
 ## Searching Housing from Shelter
 
-To be added soon.
+The data on homelessness in Toronto indicates a concerning trend where more individuals are returning to shelters from permanent housing during the years of 2018 to 2022. This suggests that the permanent housing system in Toronto may be facing significant challenges in providing adequate support to individuals and families in need. Homeless youths in particular are affected by this trend, as they face greater barriers in accessing affordable and stable housing.
+
+The COVID-19 pandemic further exacerbated the issue of homelessness in Toronto, with an increase in temporary shelters established to prevent the spread of the virus. However, temporary housing is only a short-term solution that fails to address the underlying systemic issues that contribute to homelessness. Moreover, the focus on temporary housing during the pandemic resulted in a lack of effort to provide permanent housing solutions for homeless populations. This has significant consequences for the health and well-being of individuals experiencing homelessness, as they continue to face significant barriers to accessing safe and stable living arrangements. For the population groups in the data, there was an upward trend of those who moved to housing after 2021, as seen in the [@fig-3]. However, this was not the case for the youth population. Staying in shelters makes it challenging for them to distance themselves physically and socially in a shared space with others who are in the same position as well as staff. This had a negative impact on the mental and social well-being of the youth population, resulting in isolation, poor mental health, and an increase in substance abuse [@mentalhealth]. It is essential to acknowledge that this was particularly prevalent among minority groups, such as those who identified as Black, LGBTQ+, and newcomers to Canada [@citeNoble].
 
 ## Going from Housing to Shelter again
 
-To be added soon.
+Based on the fluctuation of homeless youths returning from stable housing during the years of the pandemic, it can be seen that there were fewer individuals returning to shelters from housing during the beginning of COVID-19. However, the following year showed an increasing trend of youths returning from housing, and then it descended once again in 2022, as illustrated in [@fig-1].
+
+This finding suggests that returning to shelters from housing may have been a difficult process or an undesired choice during the first year of the pandemic. Individuals faced obstacles when seeking shelter during the pandemic due to restrictions and the need for isolation. The shelter systems established reduced capacity to enforce physical distancing between staff and clients to minimize the spread of the virus. Furthermore, the pandemic has had a significant impact on precarious and low-wage jobs, leading to high levels of unemployment. As a result, youth would lose their housing alongside their employment and would move to shelters. This may have contributed to the increase in youths returning to shelters in 2021, as there was an ease in the restrictions of isolation and social distancing.
+
+However, it is important to note that this data set does not take into account COVID-19 related deaths of the population groups and also excludes those who are mainly sleeping outdoors or using other homeless shelter support services. Including a more representative sample of the homeless population in the city in future studies would help provide a more accurate understanding of the impact of the pandemic on homelessness.
 
 ## Weaknesses and Next Steps
 
-To be added soon.
+One limitation of the data used in this paper is that it did not take into account COVID-19 related deaths of the population groups, which may have affected the trends observed. Additionally, there was missing data on the availability and system of permanent housing, which could have shed light on the flow of homeless populations entering and leaving the housing system. A more detailed timeline of the pandemic in Toronto and its specific impacts would have also been useful in supporting the implications of trends observed in relation to COVID-19 [@citedataset].
+
+Furthermore, the data set used in this paper only includes those who have used services funded by the City of Toronto, which excludes those who mainly sleep outdoors or use other homeless shelter support services. To gain a more representative sample of the homeless population in the city, future research should include data sets that focus on homeless population groups that use shelters not funded by the City of Toronto as well as those that only sleep outdoors.
+
+Moving forward, it would be helpful to compare the number of accessible shelters available with the amount of permanent housing available. This would provide insight into how available stable housing is as opposed to temporary housing. Incorporating a larger quantity of relevant literature in future research that discusses permanent housing in Toronto and the pandemic in Toronto would also generate a more enriched data analysis and discussion for this topic.
+
+For all homelessness people in Toronto, they should seek out and utilize available services, so that they can all know about the available services such as shelters, food banks, and support services for those facing homeless. They should try to connect with some outreach workers, where they can access support and assistance to get help with some needs, and getting emotional support. All individuals should prioritize their health by seeking medical care, and access mental health services. Also, they should set goals for employment opportunities and permanent housing, so they can get the sense of stability from employment, and able to secure a permanent housing.
 
 \newpage
 
 
 # Conclusion
 
-Youth homelessness is an important issue because it not only impacts the immediate well-being of these individuals but also has long-term consequences for their futures. Moreover, their unique challenges and vulnerabilities call for tailored support and resources to break the cycle of homelessness. We want to make sure that all youths facing homelessness do not face any additional struggles of finding a shelter to stabilise their housing, improve their wellbeing, connect with others within the community, and potentially avoid the chances of going into homelessness again. 
+Youth homelessness is an important issue because it not only impacts the immediate well-being of these individuals but also has long-term consequences for their futures [@rare]. Moreover, their unique challenges and vulnerabilities call for tailored support and resources to break the cycle of homelessness. We want to make sure that all youths facing homelessness do not face any additional struggles of finding a shelter to stabilise their housing, improve their wellbeing, connect with others within the community, and potentially avoid the chances of going into homelessness again. 
 
 As a team along with other UX Designers, we have created a homelessness app called HomeSafe, which is designed for youths, which can be soon available to the public. Our solution is developed by two primary objectives. The first objective is to address the immediate needs of homeless youths by offering emergency call functionality and shelter-finding capabilities. Emergency assistance provides homeless youths with the ability to call for help in emergencies, ensuring that vulnerable youths can get the help they need as soon as possible, potentially saving lives. Shelter location enables homeless youths to find shelters that are available near them, providing them with a safe place to stay and access to basic necessities, such as food and water. The second objective focuses on helping them overcome their current situation through the resource hub, which provides access to valuable tools and assistance. With these features, HomeSafe aims to make a significant impact on the lives of homeless youths in Canada, equipping them with the necessary support and resources to pave the way for brighter futures.
 
-Our next step within our UX Design and Front-Development team is to expand our focus to provide support for both parents and children in fostering healthier relationships and communication as we understand that addressing the root cause requires helping parents tackle abusive behavior. By offering resources and guidance aimed at resolving conflicts, enhancing emotional understanding, and promoting positive parenting practices, we can create an environment where families can thrive. This will not only help prevent youth homelessness but also contribute to the overall well-being of the entire community
+Our next step within our UX Design and Front-Development team is to expand our focus to provide support for both parents and children in fostering healthier relationships and communication as we understand that addressing the root cause requires helping parents tackle abusive behavior. By offering resources and guidance aimed at resolving conflicts, enhancing emotional understanding, and promoting positive parenting practices, we can create an environment where families can thrive. This will not only help prevent youth homelessness but also contribute to the overall well-being of the entire community.
 
 \newpage
 
@@ -162,7 +372,11 @@ Our next step within our UX Design and Front-Development team is to expand our f
 # Appendix {.unnumbered}
 A mobile application called HomeSafe was built using Figma to allow homelessness people to easily seek a shelter or access resources.
 
-Link to Figma Prototypes will be added soon with an approval from team members.
+
+Our mobile app aims to provide comprehensive support to address the issue of youth homelessness. To ensure that the distress system is only activated in genuine emergencies, we have designed it to only trigger after three consecutive hits to reduce false touches. We also offer a convenient filter feature, allowing users to choose from a range of shelters based on their specific needs and find them easily using an interactive map. Recognizing the emotional toll of homelessness, we have included an online counseling program to provide support and guidance to affected youth. In addition, we offer a wealth of resources and information for users to access and explore on their own, empowering them to take control of their situation.
+
+
+Link to Figma Prototypes is available at: <https://www.figma.com/proto/VyHKmTVXesC4kYepOP0I6M/wireframe?page-id=13%3A255&node-id=78-524&viewport=516%2C479%2C0.19&scaling=scale-down&starting-point-node-id=78%3A532&show-proto-sidebar=1>
 
 ![SOS Feature](HomeSafe1.png)
 ![Finding a Shelter](HomeSafe2.png)
